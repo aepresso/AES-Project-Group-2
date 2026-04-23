@@ -22,15 +22,46 @@ def polyMod(a, m):
     
     args: a and m are polynomials as integers
     returns the remainder of a divided by m as an integer
+
+    This functions used to help make mod inverse and polynomial multiplication easier to implement.
     """
     if (getDegree(a) == -1 or getDegree(m) == -1):
         return 0
     while getDegree(a) >= getDegree(m):
         a ^= m << (getDegree(a) - getDegree(m))
     return a
+
+def polyDivide(a, b):
+    """ 
+    This calculates the polynomial division of a by b. 
+    Super similar to polyMod but im returning the quotient instead of the remainder.
+    
+    args: a and b are polynomials as integers
+    returns the quotient of a divided by b as an integer
+    """
+    if (getDegree(a) == -1 or getDegree(b) == -1):
+        return 0
+    quotient = 0
+    while getDegree(a) >= getDegree(b):
+        quotient |= 1 << (getDegree(a) - getDegree(b))
+        a ^= b << (getDegree(a) - getDegree(b))
+    return quotient
+
+def polyMultiply(a,b):
+    """
+    This calculates the polynomials multiplication of a and b.
+    args: a and b are polynomials as integers
+    returns the product of a and b as an integer
+    """
+    if (getDegree(a) == -1 or getDegree(b) == -1): 
+        return 0
+    result = 0
+    for i in range (16):
+        if (b >> i) & 1:
+            result ^= a << i
+    return polyMod(result, 0x11B) # Modulo by the irreducible polynomial for AES
 ## Calculate Modular Inverse over arbitrary m(x)
 
-## Calculate Polynomial Multiplication over arbitrary m(x)
 
 ## Print Current State Box
 
