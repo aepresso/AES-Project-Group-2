@@ -1,6 +1,0 @@
-from aes.helperFunctions import *
-
-def test_xGCD ():
-    gcd, s, t = xGCD(0x53, 0x11B) 
-    assert gcd == 1
-    assert polyMultiply (0x53,s) == 1
