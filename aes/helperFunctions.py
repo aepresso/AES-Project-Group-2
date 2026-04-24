@@ -117,3 +117,28 @@ def printRoundKeys(round_keys):
 
         # print each byte of the word in hexadecimal
         print(f"W{i}: " + " ".join(f"{byte:02x}" for byte in word))
+
+## Print Plaintext > Cyphertext > RecoverText
+def printEncryptionProcess(plaintext, ciphertext, recovered):
+    """
+    This prints the plaintext, ciphertext, and recovered text.
+    It is used to show the full AES encryption and decryption process.
+
+    Args:
+        plaintext: original input text (list of bytes or string)
+        ciphertext: encrypted output (list of bytes)
+        recovered: decrypted output (list of bytes)
+
+    Returns:
+        nothing, it only prints the values
+    """
+    print("Encryption Process:")
+
+    print("Plaintext:")
+    print(" ".join(f"{b:02x}" for b in plaintext))
+
+    print("Ciphertext:")
+    print(" ".join(f"{b:02x}" for b in ciphertext))
+
+    print("Recovered Text:")
+    print(" ".join(f"{b:02x}" for b in recovered))

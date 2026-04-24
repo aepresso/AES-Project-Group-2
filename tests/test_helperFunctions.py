@@ -96,3 +96,18 @@ def test_printRoundKeys(capsys):
     assert "W1: 28 ae d2 a6" in captured.out
     assert "W2: ab f7 15 88" in captured.out
     assert "W3: 09 cf 4f 3c" in captured.out
+
+
+def test_printEncryptionProcess(capsys):
+    plaintext = [0x32, 0x43, 0xf6, 0xa8]
+    ciphertext = [0x39, 0x25, 0x84, 0x1d]
+    recovered = [0x32, 0x43, 0xf6, 0xa8]
+
+    printEncryptionProcess(plaintext, ciphertext, recovered)
+
+    captured = capsys.readouterr()
+
+    assert "Encryption Process:" in captured.out
+    assert "Plaintext:" in captured.out
+    assert "Ciphertext:" in captured.out
+    assert "Recovered Text:" in captured.out
