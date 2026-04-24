@@ -84,6 +84,44 @@ def xGCD(a,m):
 
 ## Calculate Modular Inverse over arbitrary m(x)
 
+## Calculate Polynomial Multiplication over arbitrary m(x)
+def gfMultiply(a, b):
+    """
+    This multiplies two bytes in the AES Galois Field GF(2^8).
+    AES uses the irreducible polynomial 0x11B when reducing values
+    that go over 8 bits.
+
+    Args:
+        a: first byte value
+        b: second byte value
+
+    Returns:
+        the multiplied byte value reduced to 8 bits
+    """
+    result = 0
+
+    for i in range(8):
+        # If the lowest bit of b is 1, add a to the result using XOR
+        if b & 1:
+            result ^= a
+
+        # Check if a will overflow past 8 bits
+        carry = a & 0x80
+
+        # Multiply a by x, which is the same as shifting left
+        a <<= 1
+
+        # If it overflowed, reduce it using AES polynomial 0x11B
+        if carry:
+            a ^= 0x11B
+
+        # Keep only the lowest 8 bits
+        a &= 0xFF
+
+        # Move to the next bit of b
+        b >>= 1
+
+    return result
 
 ## Print Current State Box
 
