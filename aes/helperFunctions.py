@@ -22,52 +22,68 @@ def polyMod(a, m):
     
     args: a and m are polynomials as integers
     returns the remainder of a divided by m as an integer
+
+    This functions used to help make mod inverse and polynomial multiplication easier to implement.
     """
     if (getDegree(a) == -1 or getDegree(m) == -1):
         return 0
     while getDegree(a) >= getDegree(m):
         a ^= m << (getDegree(a) - getDegree(m))
     return a
+
+def polyDivide(a, b):
+    """ 
+    This calculates the polynomial division of a by b. 
+    Super similar to polyMod but im returning the quotient instead of the remainder.
+    
+    args: a and b are polynomials as integers
+    returns the quotient of a divided by b as an integer
+    """
+    if (getDegree(a) == -1 or getDegree(b) == -1):
+        return 0
+    quotient = 0
+    while getDegree(a) >= getDegree(b):
+        quotient |= 1 << (getDegree(a) - getDegree(b))
+        a ^= b << (getDegree(a) - getDegree(b))
+    return quotient
+
+def polyMultiply(a,b):
+    """
+    This calculates the polynomials multiplication of a and b.
+    args: a and b are polynomials as integers
+    returns the product of a and b as an integer
+    """
+    if (getDegree(a) == -1 or getDegree(b) == -1): 
+        return 0
+    result = 0
+    for i in range (16):
+        if (b >> i) & 1:
+            result ^= a << i
+    return polyMod(result, 0x11B) # Modulo by the irreducible polynomial for AES
+
+def xGCD(a,m):
+    """
+    This uses extended Euclidean to calculate GCD of a and m
+    args: a and m are polynomials as integers
+    returns the GCD of a and m as an integer and s and t such that a*s + m*t = GCD(a,m)
+    """
+    if (getDegree(m) == -1):
+        return a, 1, 0
+    
+    q = polyDivide(a, m)
+    r = polyMod(a, m)
+    gcd, s1, t1 = xGCD(m, r) # Using recursion to calculate the GCD of m and r, which is the remainder of a divided by m
+
+    s = t1
+    t = s1 ^ polyMultiply(q, t1)
+
+    return gcd, s, t
+    
+
+
+
 ## Calculate Modular Inverse over arbitrary m(x)
 
-## Calculate Polynomial Multiplication over arbitrary m(x)
-def gfMultiply(a, b):
-    """
-    This multiplies two bytes in the AES Galois Field GF(2^8).
-    AES uses the irreducible polynomial 0x11B when reducing values
-    that go over 8 bits.
-
-    Args:
-        a: first byte value
-        b: second byte value
-
-    Returns:
-        the multiplied byte value reduced to 8 bits
-    """
-    result = 0
-
-    for i in range(8):
-        # If the lowest bit of b is 1, add a to the result using XOR
-        if b & 1:
-            result ^= a
-
-        # Check if a will overflow past 8 bits
-        carry = a & 0x80
-
-        # Multiply a by x, which is the same as shifting left
-        a <<= 1
-
-        # If it overflowed, reduce it using AES polynomial 0x11B
-        if carry:
-            a ^= 0x11B
-
-        # Keep only the lowest 8 bits
-        a &= 0xFF
-
-        # Move to the next bit of b
-        b >>= 1
-
-    return result
 
 ## Print Current State Box
 
