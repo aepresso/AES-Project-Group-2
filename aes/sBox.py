@@ -25,4 +25,4 @@ def rotate(b, n):
     """
     return ((b << n) | (b >> (8 - n))) & 0xFF # This shifts the bits circular but keeps it below 8 bits 
 
-
+## Next on list is to create the 2D array that holds all of that subbytes :(
