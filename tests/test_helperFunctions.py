@@ -45,6 +45,24 @@ def test_polyMultiply():
     assert polyMultiply(0x02, 0x01) == 0x02  # simple case
     assert polyMultiply(0xFF, 0x02) == 0xE5 # testing reduction by irreducible polynomial
 
+def printStateBox(state):
+    """
+    This prints the current AES state box as a 4x4 matrix.
+    Each byte is printed in hexadecimal so it is easier to read
+    during encryption and decryption.
+
+    Args:
+        state: a 4x4 array of byte values
+
+    Returns:
+        nothing, it only prints the state box
+    """
+    print("Current State Box:")
+
+    for r in range(4):
+        # Print each row cleanly with no trailing space
+        print(" ".join(f"{state[r][c]:02x}" for c in range(4)))
+
 def test_xGCD():
     """
     Testing cases for xGCD

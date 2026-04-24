@@ -105,6 +105,47 @@ def printStateBox(state):
             # print each byte as two hexadecimal digits
             print(f"{state[r][c]:02x}", end=" ")
         print()
+
 ## Print Round Keys (W0 to W43 MUST BE HEXADECIMAL)
+def printRoundKeys(round_keys):
+    """
+    This prints the AES round keys in hexadecimal.
+    it is mean to print W0 through W43 for AES-128 key expansion.
+
+    args:
+        round_keys: a list of words, where each word has 4 byte values
+
+    returns:
+        nothing, it only prints the round keys
+    """
+    print("Round Keys:")
+    for i in range(len(round_keys)):
+        word = round_keys[i]
+
+        # print each byte of the word in hexadecimal
+        print(f"W{i}: " + " ".join(f"{byte:02x}" for byte in word))
 
 ## Print Plaintext > Cyphertext > RecoverText
+def printEncryptionProcess(plaintext, ciphertext, recovered):
+    """
+    This prints the plaintext, ciphertext, and recovered text.
+    It is used to show the full AES encryption and decryption process.
+
+    Args:
+        plaintext: original input text (list of bytes or string)
+        ciphertext: encrypted output (list of bytes)
+        recovered: decrypted output (list of bytes)
+
+    Returns:
+        nothing, it only prints the values
+    """
+    print("Encryption Process:")
+
+    print("Plaintext:")
+    print(" ".join(f"{b:02x}" for b in plaintext))
+
+    print("Ciphertext:")
+    print(" ".join(f"{b:02x}" for b in ciphertext))
+
+    print("Recovered Text:")
+    print(" ".join(f"{b:02x}" for b in recovered))
