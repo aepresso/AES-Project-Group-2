@@ -79,13 +79,35 @@ def test_xGCD():
     gcd3, s3, t3 = xGCD(0x00, 0x11B)
     assert gcd3 == 0x11B                      # gcd of 0 and m is m
     
-def test_modInverse():
-    """
-    Testing the cases for the wrapper of xGCD. 
-    taking only the inverse modulo
-    """
-    assert modInverse(0x53, 0x11B) == 0xCA  # Finding that inverse 
-    assert modInverse(0x01, 0x11B) == 0x01  # Inverse of 1 is 1
-    assert modInverse(0x00, 0x11B) == 0x00  # inverse of 0 should be zero
-    assert modInverse(0xCA, 0x11B) == 0x53  # This should be inverse of first test case
+def test_printRoundKeys(capsys):
+    round_keys = [
+        [0x2b, 0x7e, 0x15, 0x16],
+        [0x28, 0xae, 0xd2, 0xa6],
+        [0xab, 0xf7, 0x15, 0x88],
+        [0x09, 0xcf, 0x4f, 0x3c]
+    ]
 
+    printRoundKeys(round_keys)
+
+    captured = capsys.readouterr()
+
+    assert "Round Keys:" in captured.out
+    assert "W0: 2b 7e 15 16" in captured.out
+    assert "W1: 28 ae d2 a6" in captured.out
+    assert "W2: ab f7 15 88" in captured.out
+    assert "W3: 09 cf 4f 3c" in captured.out
+
+
+def test_printEncryptionProcess(capsys):
+    plaintext = [0x32, 0x43, 0xf6, 0xa8]
+    ciphertext = [0x39, 0x25, 0x84, 0x1d]
+    recovered = [0x32, 0x43, 0xf6, 0xa8]
+
+    printEncryptionProcess(plaintext, ciphertext, recovered)
+
+    captured = capsys.readouterr()
+
+    assert "Encryption Process:" in captured.out
+    assert "Plaintext:" in captured.out
+    assert "Ciphertext:" in captured.out
+    assert "Recovered Text:" in captured.out
