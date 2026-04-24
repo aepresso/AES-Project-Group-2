@@ -80,10 +80,16 @@ def xGCD(a,m):
     return gcd, s, t
     
 
-
-
-## Calculate Modular Inverse over arbitrary m(x)
-
+def modInverse(a,m):
+    """
+    This is a simple wrapper for only extracting
+    the modular inverse from xGCD 
+    args: a and m which are the polynomials we are extracting from
+    returns: s the modular inverse one example to explain it kinda is
+    3 mod 7 = 5 because 15 = 1 (mod 7)
+    """
+    gcd, s, t = xGCD(a,m)
+    return s
 
 ## Print Current State Box
 

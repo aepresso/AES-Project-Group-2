@@ -61,3 +61,13 @@ def test_xGCD():
     gcd3, s3, t3 = xGCD(0x00, 0x11B)
     assert gcd3 == 0x11B                      # gcd of 0 and m is m
     
+def test_modInverse():
+    """
+    Testing the cases for the wrapper of xGCD. 
+    taking only the inverse modulo
+    """
+    assert modInverse(0x53, 0x11B) == 0xCA  # Finding that inverse 
+    assert modInverse(0x01, 0x11B) == 0x01  # Inverse of 1 is 1
+    assert modInverse(0x00, 0x11B) == 0x00  # inverse of 0 should be zero
+    assert modInverse(0xCA, 0x11B) == 0x53  # This should be inverse of first test case
+
