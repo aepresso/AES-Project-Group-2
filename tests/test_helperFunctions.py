@@ -111,3 +111,13 @@ def test_printEncryptionProcess(capsys):
     assert "Plaintext:" in captured.out
     assert "Ciphertext:" in captured.out
     assert "Recovered Text:" in captured.out
+
+def test_modInverse():
+    """
+    Testing the cases for the wrapper of xGCD. 
+    taking only the inverse modulo
+    """
+    assert modInverse(0x53, 0x11B) == 0xCA  # Finding that inverse 
+    assert modInverse(0x01, 0x11B) == 0x01  # Inverse of 1 is 1
+    assert modInverse(0x00, 0x11B) == 0x00  # inverse of 0 should be zero
+    assert modInverse(0xCA, 0x11B) == 0x53  # This should be inverse of first test cas
