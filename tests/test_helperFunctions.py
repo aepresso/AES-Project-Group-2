@@ -45,6 +45,24 @@ def test_polyMultiply():
     assert polyMultiply(0x02, 0x01) == 0x02  # simple case
     assert polyMultiply(0xFF, 0x02) == 0xE5 # testing reduction by irreducible polynomial
 
+def printStateBox(state):
+    """
+    This prints the current AES state box as a 4x4 matrix.
+    Each byte is printed in hexadecimal so it is easier to read
+    during encryption and decryption.
+
+    Args:
+        state: a 4x4 array of byte values
+
+    Returns:
+        nothing, it only prints the state box
+    """
+    print("Current State Box:")
+
+    for r in range(4):
+        # Print each row cleanly with no trailing space
+        print(" ".join(f"{state[r][c]:02x}" for c in range(4)))
+
 def test_xGCD():
     """
     Testing cases for xGCD
@@ -61,3 +79,20 @@ def test_xGCD():
     gcd3, s3, t3 = xGCD(0x00, 0x11B)
     assert gcd3 == 0x11B                      # gcd of 0 and m is m
     
+def test_printRoundKeys(capsys):
+    round_keys = [
+        [0x2b, 0x7e, 0x15, 0x16],
+        [0x28, 0xae, 0xd2, 0xa6],
+        [0xab, 0xf7, 0x15, 0x88],
+        [0x09, 0xcf, 0x4f, 0x3c]
+    ]
+
+    printRoundKeys(round_keys)
+
+    captured = capsys.readouterr()
+
+    assert "Round Keys:" in captured.out
+    assert "W0: 2b 7e 15 16" in captured.out
+    assert "W1: 28 ae d2 a6" in captured.out
+    assert "W2: ab f7 15 88" in captured.out
+    assert "W3: 09 cf 4f 3c" in captured.out
