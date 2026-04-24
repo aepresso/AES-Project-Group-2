@@ -3,7 +3,10 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from aes.sBox import *
 """
-Testing all functions in sBox to confirm that they work
+This file tests the functions in sBox
+to run any of the test you must install run the command
+python pip install pytest in the terminal. Then you can run the command
+python -m pytest -v 
 """
 def test_subByte():
     """

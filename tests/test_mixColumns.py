@@ -1,4 +1,10 @@
 from aes.mixColumns import mixColumns, invMixColumns, shiftRows, invShiftRows
+"""
+This file tests the mixColumns functions
+to run any of the test you must install run the command
+python pip install pytest in the terminal. Then you can run the command
+python -m pytest -v 
+"""
 
 
 def test_mixColumns():
