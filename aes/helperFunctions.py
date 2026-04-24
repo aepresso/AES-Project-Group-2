@@ -60,6 +60,28 @@ def polyMultiply(a,b):
         if (b >> i) & 1:
             result ^= a << i
     return polyMod(result, 0x11B) # Modulo by the irreducible polynomial for AES
+
+def xGCD(a,m):
+    """
+    This uses extended Euclidean to calculate GCD of a and m
+    args: a and m are polynomials as integers
+    returns the GCD of a and m as an integer and s and t such that a*s + m*t = GCD(a,m)
+    """
+    if (getDegree(m) == -1):
+        return a, 1, 0
+    
+    q = polyDivide(a, m)
+    r = polyMod(a, m)
+    gcd, s1, t1 = xGCD(m, r) # Using recursion to calculate the GCD of m and r, which is the remainder of a divided by m
+
+    s = t1
+    t = s1 ^ polyMultiply(q, t1)
+
+    return gcd, s, t
+    
+
+
+
 ## Calculate Modular Inverse over arbitrary m(x)
 
 

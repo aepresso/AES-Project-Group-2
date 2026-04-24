@@ -3,11 +3,13 @@ from aes.helperFunctions import *
 This file tests the helper functions in helperFunctions.py.
 to run any of the test you must install run the command
 python pip install pytest in the terminal. Then you can run the command
-pytest test_helperFunctions.py to run all of the tests in this file.
+python -m pytest -v 
 """
 def test_getDegree():
     """ 
-    Testing all of the cases for getDegree. This includes testing the degree of 0, 1, and 2 term polynomials as well as testing the degree of 0 which should return -1."""
+    Testing all of the cases for getDegree. This includes testing the degree of 0, 1, and 2 
+    term polynomials as well as testing the degree of 0 which should return -1.
+    """
     assert getDegree(0x01) == 0
     assert getDegree(0x02) == 1
     assert getDegree(0x15) == 4
@@ -32,7 +34,6 @@ def test_polyDivide():
     assert polyDivide(0x00, 0x11B) == 0x00  # zero case
     assert polyDivide(0x87, 0x11B) == 0x00  # degree < m, quotient is 0
     assert polyDivide(0x3A5, 0x11B) == 0x03  # two iterations
-    print("All polyDivide tests passed!")
 
 def test_polyMultiply():
     """
@@ -43,4 +44,20 @@ def test_polyMultiply():
     assert polyMultiply(0x01, 0x57) == 0x57  # multiply by 1 stays same
     assert polyMultiply(0x02, 0x01) == 0x02  # simple case
     assert polyMultiply(0xFF, 0x02) == 0xE5 # testing reduction by irreducible polynomial
-    print("All polyMultiply tests passed!")
+
+def test_xGCD():
+    """
+    Testing cases for xGCD
+    """
+    gcd, s, t = xGCD(0x53, 0x11B)
+    assert gcd == 0x01                        # irreducible poly always gives gcd of 1
+    assert polyMultiply(0x53, s) == 0x01      # s is the inverse of 0x53
+    assert s == 0xCA                          # AES known inverse of 0x53 is 0xCA
+
+    gcd2, s2, t2 = xGCD(0x01, 0x11B)
+    assert gcd2 == 0x01                       # gcd of 1 and irreducible poly is 1
+    assert polyMultiply(0x01, s2) == 0x01     # inverse of 1 is 1
+
+    gcd3, s3, t3 = xGCD(0x00, 0x11B)
+    assert gcd3 == 0x11B                      # gcd of 0 and m is m
+    
