@@ -124,7 +124,19 @@ def gfMultiply(a, b):
     return result
 
 ## Print Current State Box
+def printStateBox(state):
+    """
+    This prints the current AES state box as a 4x4 matrix.
+    Each byte is printed in hexadecimal so it is easier to read
+    during encryption and decryption.
+    """
+    print("Current State Box:")
 
+    for r in range(4):
+        for c in range(4):
+            # print each byte as two hexadecimal digits
+            print(f"{state[r][c]:02x}", end=" ")
+        print()
 ## Print Round Keys (W0 to W43 MUST BE HEXADECIMAL)
 
 ## Print Plaintext > Cyphertext > RecoverText
