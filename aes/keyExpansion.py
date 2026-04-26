@@ -14,36 +14,19 @@ from aes.sBox import *
 """
 def keyExpansion(initialKey, round_count):
     rcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
-    resultKey = copy.deepcopy(initialKey)
     
+    # flatten initialKey into list of 4 words W[0]-W[3]
+    W = [initialKey[i][:] for i in range(4)]
     
-    # Below is the case for when the round is noy divisible by four
-    for i in range(len(resultKey)):
-        if i % 4 != 0:
-            for j in range(len(resultKey[i])):
-                resultKey[i][j] = resultKey[i-1][j] ^ initialKey[i][j]
-                
+    # generate W[4] through W[4*round_count+3]
+    for i in range(4, 4 * round_count + 4):
+        temp = W[i-1][:]
+        if i % 4 == 0:
+            temp.append(temp.pop(0))  # RotWord
+            temp = [subByte(b) for b in temp]  # SubWord
+            temp[0] ^= rcon[(i // 4) - 1]  # XOR Rcon
+        W.append([W[i-4][j] ^ temp[j] for j in range(4)])
     
-        # Below is the case when the round is divisble by four and the column is shifted a little bit
-        else:
-            temp = copy.deepcopy(resultKey[i-1]) if i > 0 else copy.deepcopy(initialKey[3])
-            temp.append(temp.pop(0))  # rotate
-            
-            # applying subByte to every byte in the w col
-            for j in range(len(temp)):
-                if i == 0:
-                    print(f"after rotate: {temp}")
-                    print(f"after subByte: {temp}")
-                    print(f"after rcon: {temp}")
-                    print(f"after XOR initialKey: {resultKey[i]}")
-                temp[j] = subByte (temp[j])
-            
-            # applying the xor at the end of the subByte
-            temp[0] ^= rcon[round_count-1]
-            
-            
-            resultKey [i] = temp
-            for j in range(len(resultKey[i])):
-                resultKey[i][j] ^= initialKey[i][j]
-    return resultKey
-
+    # return the round_count-th round key as 4x4 matrix
+    start = 4 * round_count
+    return [W[start + i] for i in range(4)]
