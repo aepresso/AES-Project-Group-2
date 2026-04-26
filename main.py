@@ -1,5 +1,5 @@
 import sys
-from aes.sBox import generateSBox, generateInvSBox
+from aes.sBox import generateSBox, generateInvSBox, subByte
 from aes.mixColumns import mixColumns, invMixColumns, shiftRows, invShiftRows
 from aes.keyExpansion import keyExpansion  
 
@@ -16,6 +16,49 @@ def createStateBox(blockOfBytes):
         stateBox [i%4][i//4] = blockOfBytes[i]
     return stateBox
 
+def addRoundKey(stateBlock, roundKeyBlock):
+    """
+    Takes in the stateBlock bytes
+    and then xors the round key to each 
+    byte in the state block
+
+    args: stateBlock and roundKeyBlock; both 2D arrays
+    returns: stateBlock, this is after adding that round key.
+    """
+    for row in range (4):
+        for col in range (4):
+            stateBlock[row][col] ^= roundKeyBlock[row][col]
+    return stateBlock
+
+def subBytes(stateBox):
+    """
+    This applies subByte to the entire state box
+    giving the substitution needed.
+    does this by applying the subByte functions to every byte in the state
+    by iterating through it in a 2D array
+
+    args: stateBox, a 2D array that holds the current state
+    returns: subState, the stateBox after subByte was applied all bytes in it
+    """
+    for row in range (4):
+        for col in range (4):
+            stateBox[row][col] = subByte(stateBox[row][col]) # this applies the function subByte to every byte in the state
+    return stateBox
+
+def invSubBytes(stateBox):
+    """
+    This function is use for decryption where we take the e
+    cipher text and turn it back into it output text
+    
+    args: stateBox, a 2D array of bytes
+    returns: invSubBytes of the array
+    """
+    invSBox = generateInvSBox()
+    for row in range (4):
+        for col in range (4):
+            b = stateBox[row][col]
+            stateBox[row][col] = invSBox[b >> 4][b & 0x0F]
+    return stateBox
 
 
 def padKey(key):
@@ -35,6 +78,41 @@ def padKey(key):
         key = key[:16]
     return key.encode('utf-8')
 
+def generateAllRoundKeys(initialKey):
+    roundKeys = [initialKey]
+    for i in range(1, 11):
+        nextKey = keyExpansion(roundKeys[i-1], i)
+        roundKeys.append(nextKey)
+    return roundKeys
+
+def encrypt(plaintext, key):
+    """
+    Getting to the meat of the aes 
+    is this encrpyt function
+    it'll used createStateBox, padKey, addRoundKey and almost all functinons
+    
+    args: plaintext as 16 bytes, and key as a string
+    returns the state box after encryption
+    """ 
+    paddedKey = padKey(key) # applying padkey to the key
+    paddedKey = createStateBox(paddedKey) # converting to 2D array for usage in key expansion
+    roundKeys = generateAllRoundKeys(paddedKey) # this line generates a round key for 11 rounds
+    
+    theState = createStateBox(plaintext)
+    
+    addRoundKey(theState, roundKeys[0])
+    
+    for i in range (1,10):
+        subBytes(theState)
+        shiftRows(theState)
+        mixColumns(theState)
+        addRoundKey(theState, roundKeys[i])
+
+    subBytes(theState)
+    shiftRows(theState)
+    addRoundKey(theState, roundKeys[10])
+    
+    return theState
     
 
 def main():
@@ -45,3 +123,4 @@ def main():
     key = sys.argv[1]
     input_file = sys.argv[2]
     output_file = sys.argv[3]
+
