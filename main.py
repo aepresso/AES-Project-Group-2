@@ -1,7 +1,23 @@
 import sys
 from aes.sBox import generateSBox, generateInvSBox
 from aes.mixColumns import mixColumns, invMixColumns, shiftRows, invShiftRows
-# from aes.keyExpansion import *  # stub until teammate finishes
+from aes.keyExpansion import keyExpansion  
+
+def createStateBox(blockOfBytes):
+    """
+    This takes in the bytes in an
+    array and then organizes it in a 2D array
+    in state box column fashion
+    args: blockOfBytes, an array filled with 16 bytes 
+    returns: a 2D array that organized the block argument into state box
+    """
+    stateBox = [[0]* 4 for _ in range (4) ] # creates a 2D array that gets filled in
+    for i in range (16):
+        stateBox [i%4][i//4] = blockOfBytes[i]
+    return stateBox
+
+
+
 def padKey(key):
     """
     This will parse a string from the user input 
