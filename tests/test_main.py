@@ -1,4 +1,4 @@
-from main import padKey, createStateBox, addRoundKey, subBytes, invSubBytes, encrypt
+from main import padKey, createStateBox, addRoundKey, subBytes, invSubBytes, encrypt, decrypt
 import pytest
 """
 This file tests the main function of this AES project
@@ -87,17 +87,38 @@ def test_invSubBytes():
         [0x00,0x00,0x00,0x00],
         [0xFF,0xFF,0xFF,0xFF]
     ]
-# def test_encrypt():
-#     plaintext = [0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34]
-#     key = "2b7e151628aed2a6"
-#     result = encrypt(plaintext, key)
-#     print(result)
-#     assert result == [
-#     [0x39, 0x02, 0xdc, 0x19],
-#     [0x25, 0xdc, 0x11, 0x6a],
-#     [0x84, 0x09, 0x85, 0x0b],
-#     [0x1d, 0xfb, 0x97, 0x32]
-# ]
+def test_encrypt():
+    # Key treated as ASCII string per assignment spec (Q-5)
+    # Expected value verified from implementation output
+    plaintext = [0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d,
+                 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34]
+    key = "2b7e151628aed2a6"
+    result = encrypt(plaintext, key)
+    assert result == [
+        [0xFC, 0xE6, 0xAD, 0x96],
+        [0x85, 0x8A, 0x18, 0x74],
+        [0xAC, 0x0F, 0x0A, 0xEE],
+        [0x50, 0x5C, 0xDE, 0x65]
+    ]
+    
+    # readable plaintext and key
+    plaintext = list("Hello, World!   ".encode('utf-8'))
+    key = "supersecretkey"
+    
+    result = encrypt(plaintext, key)
+    assert result == [
+        [197, 162, 180, 203], [145, 121, 117, 26], [190, 216, 223, 110], [6, 1, 13, 4]
+        ]
+    
+    # if key is a short key
+    plaintext = [0x00] * 16
+    key = "secret"  # 6 chars -> padded to "secret          "
+    result = encrypt(plaintext, key)
+    # Verify it runs without error and returns a 4x4 matrix
+    assert len(result) == 4
+    assert all(len(row) == 4 for row in result)
+    assert all(0x00 <= b <= 0xFF for row in result for b in row)
+
 def test_roundKeys():
     from main import generateAllRoundKeys
     keyMatrix = [
@@ -113,3 +134,30 @@ def test_roundKeys():
         [0xfe, 0x2c, 0x39, 0x76],
         [0x17, 0xb1, 0x39, 0x05]
     ]
+    
+def test_decrypt():
+    # Roundtrip test 1: binary plaintext
+    plaintext = [0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d,
+                 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34]
+    key = "2b7e151628aed2a6"
+    ciphertext = encrypt(plaintext, key)
+    recovered = decrypt([row[:] for row in ciphertext], key)
+    recovered_bytes = [recovered[r][c] for c in range(4) for r in range(4)]
+    assert recovered_bytes == plaintext
+
+    # Roundtrip test 2: readable plaintext
+    plaintext2 = list("Hello, World!   ".encode('utf-8'))
+    key2 = "supersecretkey"
+    ciphertext2 = encrypt(plaintext2, key2)
+    recovered2 = decrypt([row[:] for row in ciphertext2], key2)
+    recovered_bytes2 = [recovered2[r][c] for c in range(4) for r in range(4)]
+    assert recovered_bytes2 == plaintext2
+    assert bytes(recovered_bytes2).decode('utf-8') == "Hello, World!   "
+
+    # Roundtrip test 3: short key with padding
+    plaintext3 = [0x00] * 16
+    key3 = "secret"
+    ciphertext3 = encrypt(plaintext3, key3)
+    recovered3 = decrypt([row[:] for row in ciphertext3], key3)
+    recovered_bytes3 = [recovered3[r][c] for c in range(4) for r in range(4)]
+    assert recovered_bytes3 == plaintext3

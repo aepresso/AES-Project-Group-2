@@ -81,7 +81,7 @@ def padKey(key):
 def generateAllRoundKeys(initialKey):
     roundKeys = [initialKey]
     for i in range(1, 11):
-        nextKey = keyExpansion(roundKeys[i-1], i)
+        nextKey = keyExpansion(initialKey, i)
         roundKeys.append(nextKey)
     return roundKeys
 
@@ -104,17 +104,39 @@ def encrypt(plaintext, key):
     
     for i in range (1,10):
         subBytes(theState)
-        shiftRows(theState)
-        mixColumns(theState)
+        theState = shiftRows(theState)
+        theState =mixColumns(theState)
         addRoundKey(theState, roundKeys[i])
 
     subBytes(theState)
-    shiftRows(theState)
+    theState = shiftRows(theState)
     addRoundKey(theState, roundKeys[10])
     
     return theState
     
-
+def decrypt(ciphertext, key):
+    paddedKey = padKey(key)
+    paddedKey = createStateBox(paddedKey)
+    roundKeys = generateAllRoundKeys(paddedKey)
+    
+    theState = ciphertext #state box is current cipher text but we unravel it
+    
+    #initial round key xor
+    addRoundKey(theState, roundKeys[10])
+    
+    # rounds 9 - 1 reverse order inverse operations
+    for i in range (9,0,-1):
+        theState = invShiftRows(theState)
+        theState = invSubBytes(theState)
+        addRoundKey(theState, roundKeys[i])
+        theState = invMixColumns(theState)
+        
+    theState = invShiftRows(theState)
+    theState = invSubBytes(theState)
+    addRoundKey(theState,roundKeys[0])
+    
+    return theState
+    
 def main():
     if len(sys.argv) != 4:
         print("Usage: python main.py <key> <input_file> <output_file>")

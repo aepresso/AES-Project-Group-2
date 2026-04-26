@@ -16,7 +16,7 @@ def keyExpansion(initialKey, round_count):
     rcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
     
     # flatten initialKey into list of 4 words W[0]-W[3]
-    W = [initialKey[i][:] for i in range(4)]
+    W = [[initialKey[j][i] for j in range(4)] for i in range (4)]
     
     # generate W[4] through W[4*round_count+3]
     for i in range(4, 4 * round_count + 4):
@@ -29,4 +29,5 @@ def keyExpansion(initialKey, round_count):
     
     # return the round_count-th round key as 4x4 matrix
     start = 4 * round_count
-    return [W[start + i] for i in range(4)]
+    round_words = [W[start + i] for i in range(4)]
+    return [[round_words[col][row] for col in range(4)] for row in range(4)]
